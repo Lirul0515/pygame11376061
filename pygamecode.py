@@ -7,17 +7,16 @@ screenWidth = 1000
 playground = [screenWidth,screenHigh]
 screen = pygame.display.set_mode((screenWidth,screenHigh))
 
-
+parent_path = Path(__file__).parent/'airplaneicon.png'
 #image_path = parent_path/'gamecode'
 #icon_path = image_path/'airplaneicon.png'
-parent_path = Path(__file__).parent/'airplaneicon.png'
+
+pygame.display.set_caption("1942偽")
 icon_image = pygame.image.load(parent_path)
 pygame.display.set_icon(icon_image)
 background = pygame.Surface(screen.get_size())
 background = background.convert()
-background.fill((50,50,50))
-
-
+background.fill((250,250,250))
 
 
 screen = pygame.display.set_mode((screenWidth,screenHigh))
