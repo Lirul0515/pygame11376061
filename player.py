@@ -7,14 +7,20 @@ import math
 
 class Player(GameObject):
 
-    def __init__(self,playground, xy = None,sensitivity = 1):
+    def __init__(self,playground, xy = None,sensitivity = 1,scale_factor = 0.2):
         GameObject.__init__(self,playground)
         self._moveScale = 0.5*sensitivity
         __parent__path = Path(__file__).parents[1]
-        self.__player__path = __parent__path/'gamecode'/'res'/'airforce.png'
+        self.__player__path = __parent__path/'gamecode'/'res'/'airforce5.png'
         self._image = pygame.image.load(self.__player__path)
         self._center = self._x + self._image.get_rect().w/2,self._y + self._image.get_rect().h/2
         self._radius = 0.3*math.hypot(self._image.get_rect().w,self._image.get_rect().h)
+
+        original_width = self._image.get_rect().width
+        original_height = self._image.get_rect().height
+        new_width = int(original_width * scale_factor)
+        new_height = int(original_height * scale_factor)
+        self._image = pygame.transform.smoothscale(self._image, (new_width, new_height))
 
         if xy is None:
             self._x = (self._playground[0] - self._image.get_rect().w)/2
