@@ -7,13 +7,18 @@ import pygame
 
 class MyMissile(GameObject):
 
-    def __init__(self,playground,xy,sensitivity = 1):
+    def __init__(self,playground,xy,sensitivity = 1,scale_factor = 0.07):
         GameObject.__init__(self,playground)
         __parent_path = Path(__file__).parents[1]
-        self.__missile_path = __parent_path/'gamecode'/'res'/'missile.png'
+        self.__missile_path = __parent_path/'gamecode'/'res'/'missile3.png'
         self._image = pygame.image.load(self.__missile_path)
         self._center = self._x + self._image.get_rect().w/2, self._y + self._image.get_rect().w/2
         self._radius = self._image.get_rect().w/2
+        original_width = self._image.get_rect().width
+        original_height = self._image.get_rect().height
+        new_width = int(original_width * scale_factor)
+        new_height = int(original_height * scale_factor)
+        self._image = pygame.transform.smoothscale(self._image, (new_width, new_height))
         self._x = xy[0]
         self._y = xy[1]
 
@@ -36,3 +41,4 @@ class MyMissile(GameObject):
                 m.hp = -1
                 m.collided = True
                 m.available = False
+
