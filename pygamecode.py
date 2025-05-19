@@ -6,7 +6,7 @@ from MyMissile import MyMissile
 from enemy import Enemy
 
 pygame.init()
-screenHigh = 1000
+screenHigh = 1050
 screenWidth = 1720
 playground = [screenWidth,screenHigh]
 screen = pygame.display.set_mode((screenWidth,screenHigh))
@@ -42,6 +42,8 @@ enemies = []
 Boom = []
 launchEnemy = pygame.USEREVENT + 2
 pygame.time.set_timer(launchEnemy,2000)
+score = 0
+
 
 
 while running:
@@ -118,6 +120,7 @@ while running:
                 enemy._collided = True
                 enemy._available = False
                 Boom.append(Explosion(enemy._center))
+                score += 10
     for enemy in enemies:
         enemy.update()
         screen.blit(enemy._image,(enemy._x ,enemy._y ))
@@ -129,6 +132,20 @@ while running:
         screen.blit(enemy._image,(enemy._x,enemy._y))
     player.update()
     screen.blit(player._image, (player._x,player._y))
+    font = pygame.font.SysFont(None, 48)
+    hp_text = font.render(f'HP: {player._hp}', True, (255, 255, 255))
+    screen.blit(hp_text, (20,20))
+    font = pygame.font.SysFont(None, 48)
+    score_text = font.render(f'Score: {score}', True, (255, 255, 0))  # 黃色字體
+    screen.blit(score_text, (1500, 20))
+    if not player._alive:
+        game_over_font = pygame.font.SysFont(None, 300)
+        game_over_text = game_over_font.render('GAME OVER', True, (255, 255, 255))
+        screen.blit(game_over_text, (screenWidth//2 - 650, screenHigh//2 - 100))
+        pygame.display.update()
+        pygame.time.wait(3000)
+        running = False
+
 
     pygame.display.update()
     dt = clock.tick(fps)

@@ -5,11 +5,32 @@ from pygame.surface import Surface, SurfaceType
 from gameObject import GameObject
 import math
 
+@property
+def hp(self):
+    return self._hp
+
+@hp.setter
+def hp(self, value):
+    self._hp = max(0, value)  # 不允許負數血量
+    if self._hp == 0:
+        self._alive = False
+        self._available = False  # 可選，觸發死亡動畫等
+
+@property
+def alive(self):
+    return self._alive
+
+@alive.setter
+def alive(self, value):
+    self._alive = value
+
 class Player(GameObject):
 
     def __init__(self,playground, xy = None,sensitivity = 1,scale_factor = 0.2):
         GameObject.__init__(self,playground)
         self._moveScale = 0.5*sensitivity
+        self._hp = 100
+        self._alive = True
         __parent__path = Path(__file__).parents[1]
         self.__player__path = __parent__path/'gamecode'/'res'/'airforce5.png'
         self._image = pygame.image.load(self.__player__path)
@@ -40,13 +61,16 @@ class Player(GameObject):
         return distance < (self._radius + other._radius)
 
     def collision_detect(self, enemies):
+        if not self._alive:
+            return
         for enemy in enemies:
-            if self.collide(enemy):
+            if self.collide(enemy) and enemy._available:
                 self._hp -= 10
-                self._collided = True
-                enemy.hp = -1
                 enemy._collided = True
                 enemy._available = False
+                if self._hp <= 0:
+                    self._alive = False
+                    self._available = False
 
 
 
