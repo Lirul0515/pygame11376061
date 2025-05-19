@@ -13,14 +13,13 @@ class Player(GameObject):
         __parent__path = Path(__file__).parents[1]
         self.__player__path = __parent__path/'gamecode'/'res'/'airforce5.png'
         self._image = pygame.image.load(self.__player__path)
-        self._center = self._x + self._image.get_rect().w/2,self._y + self._image.get_rect().h/2
-        self._radius = 0.3*math.hypot(self._image.get_rect().w,self._image.get_rect().h)
-
         original_width = self._image.get_rect().width
         original_height = self._image.get_rect().height
         new_width = int(original_width * scale_factor)
         new_height = int(original_height * scale_factor)
         self._image = pygame.transform.smoothscale(self._image, (new_width, new_height))
+        self._center = self._x + self._image.get_rect().w/2,self._y + self._image.get_rect().h/2
+        self._radius = 0.3*math.hypot(self._image.get_rect().w,self._image.get_rect().h)
 
         if xy is None:
             self._x = (self._playground[0] - self._image.get_rect().w)/2
@@ -28,17 +27,33 @@ class Player(GameObject):
         else:
             self._x = xy[0]
             self._y = xy[1]
-
         self._objectBound = (10,self._playground[0] - (self._image.get_rect().w + 10),10,self._playground[1] - (self._image.get_rect().h + 10))
 
     def update(self):
         GameObject.update(self)
         self._center = self._x + self._image.get_rect().w/2,self._y + self._image.get_rect().h/2
 
-    def collision_detect(self,enemies):
-        for m in enemies:
-            self._hp -= 10
-            self._collided = True
-            m.hp = -1
-            m.collided = True
-            m.available = False
+    def collide(self, other):
+        dx = (self._center[0] - other._center[0])
+        dy = (self._center[1] - other._center[1])
+        distance = math.hypot(dx, dy)
+        return distance < (self._radius + other._radius)
+
+    def collision_detect(self, enemies):
+        for enemy in enemies:
+            if self.collide(enemy):
+                self._hp -= 10
+                self._collided = True
+                enemy.hp = -1
+                enemy._collided = True
+                enemy._available = False
+
+
+
+    #def collision_detect(self,enemies):
+        #for m in enemies:
+            #self._hp -= 10
+            #self._collided = True
+            #m.hp = -1
+            #m.collided = True
+            #m.available = False

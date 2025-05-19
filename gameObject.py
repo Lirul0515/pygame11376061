@@ -19,6 +19,14 @@ def y(self,value):
 @hp.setter
 def hp(self,value):
     self._hp = value
+@property
+def available(self):
+    return self._available
+
+@available.setter
+def available(self, value):
+    self._available = value
+
 
 class GameObject:
     def __init__(self,playground=None):
@@ -39,6 +47,9 @@ class GameObject:
         self._center = None
         self._radius = None
         self._collided = False
+
+    def __del__(self):
+        print(self.__class__.__name__,"is being automatically destroyed. Goodbye!")
 
     def to_the_left(self):
         self._changeX = -self._moveScale

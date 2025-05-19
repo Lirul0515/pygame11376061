@@ -1,5 +1,6 @@
 import pygame
 from pathlib import Path
+from explosion import Explosion
 from player import Player
 from MyMissile import MyMissile
 from enemy import Enemy
@@ -11,15 +12,17 @@ playground = [screenWidth,screenHigh]
 screen = pygame.display.set_mode((screenWidth,screenHigh))
 
 parent_path = Path(__file__).parent/'res'/'airplaneicon.png'
-image_path = parent_path/'gamecode'
-icon_path = image_path/'airplaneicon.png'
+backgrounds_path = Path(__file__).parent/'res'/'universe.jpg'
+#image_path = parent_path/'gamecode'
+#icon_path = image_path/'airplaneicon.png'
 
 pygame.display.set_caption("1942偽")
 icon_image = pygame.image.load(parent_path)
 pygame.display.set_icon(icon_image)
-background = pygame.Surface(screen.get_size())
-background = background.convert()
-background.fill((150,150,150))
+background = pygame.image.load(backgrounds_path).convert()
+#background = pygame.Surface(screen.get_size())
+#background = background.convert()
+#background.fill((150,150,150))
 
 screen = pygame.display.set_mode((screenWidth,screenHigh))
 running = True
@@ -36,6 +39,7 @@ keyCountY = 0
 Missiles = []
 launchMissile = pygame.USEREVENT + 1
 enemies = []
+Boom = []
 launchEnemy = pygame.USEREVENT + 2
 pygame.time.set_timer(launchEnemy,2000)
 
@@ -102,15 +106,30 @@ while running:
 
     screen.blit(background,(0,0))
     Missiles = [item for item in Missiles if item._available]
-    enemies = [item for item in enemies if item._available]
+    enemies = [enemy for enemy in enemies if enemy._available]
+    Boom = [item for item in Boom if item._available]
+    player.collision_detect(enemies)
     for m in Missiles:
         m.update()
         screen.blit(m._image,(m._x + 59,m._y + 60))
+        for enemy in enemies:
+            if m.collide(enemy) and not enemy._collided:
+                m._available = False
+                enemy._collided = True
+                enemy._available = False
+                Boom.append(Explosion(enemy._center))
     for enemy in enemies:
         enemy.update()
         screen.blit(enemy._image,(enemy._x ,enemy._y ))
+        if enemy._collided and not enemy._exploded:
+            Boom.append(Explosion(enemy._center))
+            enemy._exploded = True
+    for enemy in Boom:
+        enemy.update()
+        screen.blit(enemy._image,(enemy._x,enemy._y))
     player.update()
     screen.blit(player._image, (player._x,player._y))
+
     pygame.display.update()
     dt = clock.tick(fps)
 

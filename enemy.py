@@ -8,21 +8,24 @@ import random
 
 class Enemy(GameObject):
 
-    def __init__(self,playground, xy = None,sensitivity = 1,scale_factor = 0.15):
+    def __init__(self,playground, xy = None,sensitivity = 1,scale_factor = 0.1):
         GameObject.__init__(self,playground)
         self._moveScale = 0.5*sensitivity
         __parent__path = Path(__file__).parents[1]
         self.__enemy__path = __parent__path/'gamecode'/'res'/'airforce6.png'
         self._image = pygame.image.load(self.__enemy__path)
-        self._center = self._x + self._image.get_rect().w/2,self._y + self._image.get_rect().h/2
-        self._radius = 0.3*math.hypot(self._image.get_rect().w,self._image.get_rect().h)
-        self._directionX = random.randint(-1,1)
-
         original_width = self._image.get_rect().width
         original_height = self._image.get_rect().height
         new_width = int(original_width * scale_factor)
         new_height = int(original_height * scale_factor)
         self._image = pygame.transform.smoothscale(self._image, (new_width, new_height))
+        self._center = self._x + self._image.get_rect().w/2,self._y + self._image.get_rect().h/2
+        self._radius = 0.3*math.hypot(self._image.get_rect().w,self._image.get_rect().h)
+        self._directionX = random.randint(-1,1)
+        self._collided = False
+        self._exploded = False
+        self._available = True
+
 
         if xy is None:
             self._x = (self._playground[0] - self._image.get_rect().w)/2
@@ -45,8 +48,9 @@ class Enemy(GameObject):
 
     def collision_detect(self,enemies):
         for enemy in enemies:
-            self._hp -= 10
-            self._collided = True
-            enemy.hp = -1
-            enemy.collided = True
-            enemy.available = False
+            if enemy is not self:
+                self._hp -= 10
+                self._collided = True
+                enemy.hp = -1
+                enemy.collided = True
+                enemy.available = False
